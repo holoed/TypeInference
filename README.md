@@ -1,0 +1,2 @@
+# TypeInference
+Minimalistic Type Inference
