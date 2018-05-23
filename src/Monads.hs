@@ -6,13 +6,13 @@ module Monads where
 
 data ReaderState r s a = ReaderState (r -> s -> (s, a)) deriving Functor
 
-apply (ReaderState f) = f
+run (ReaderState f) = f
 
 ask :: ReaderState r s r
 ask = ReaderState (\r s -> (s, r))
 
 local :: (r -> r) -> ReaderState r s a -> ReaderState r s a
-local f m = ReaderState (\r s -> apply m (f r) s)
+local f m = ReaderState (\r s -> run m (f r) s)
 
 get :: ReaderState r s s
 get = ReaderState (\r s -> (s, s))
@@ -28,4 +28,4 @@ instance Applicative (ReaderState r s) where
 
 instance Monad (ReaderState r s) where
   return x = ReaderState (\r s -> (s, x))
-  m >>= f = ReaderState (\r s -> let (s', x) = apply m r s in apply (f x) r s')
+  m >>= f = ReaderState (\r s -> let (s', x) = run m r s in run (f x) r s')

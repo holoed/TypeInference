@@ -5,6 +5,7 @@ module Main where
 import Fixpoint
 import RecursionSchemes
 import Monads
+import Infer (infer)
 
 -- Sample
 
@@ -25,4 +26,4 @@ ret :: ReaderState Int Int Int
 ret = cataRec alg (anaRec coAlg [1..5])
 
 main :: IO ()
-main = print (apply ret 3 0)
+main = print (run ret 3 0)
