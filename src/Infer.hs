@@ -22,10 +22,12 @@ mgu a b subs =
     (TyLam a1 b1, TyLam a2 b2) -> do subs2 <- mgu b1 b2 subs
                                      mgu a1 a2 subs2
     (TyCon name1 args1, TyCon name2 args2) | name1 == name2 ->
-                         foldM (\s (a, b) -> mgu a b s) subs (zip args1 args2)
+                         foldM (\s (a', b') -> mgu a' b' s) subs (zip args1 args2)
+    (x, y) -> fail ("Unable to unify " ++ show x ++ " " ++ show y)
 
 valueToType :: Prim -> Type
 valueToType (I _) = TyCon "int" []
+valueToType _ = undefined
 
 alg :: ExpF (TypeM Exp) -> TypeM Exp
 alg (Lit v) = do (_, bt) <- ask
@@ -33,6 +35,7 @@ alg (Lit v) = do (_, bt) <- ask
                  subs' <- mgu (valueToType v) bt subs
                  put (subs', index)
                  return (In (Lit v))
+alg _ = undefined
 
 infer :: TypeEnv -> Exp -> Type
 infer env e = substitute subs bt

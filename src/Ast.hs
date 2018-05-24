@@ -14,3 +14,6 @@ data ExpF a = Lit Prim
             | IfThenElse a a a deriving Functor
 
 type Exp = Fix ExpF
+
+lit :: Prim -> Exp
+lit v = In (Lit v)
