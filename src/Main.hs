@@ -2,9 +2,11 @@
 
 module Main where
 
+import Data.Map (Map, empty)
 import Fixpoint
 import RecursionSchemes
 import Monads
+import Ast
 import Infer (infer)
 
 -- Sample
@@ -26,4 +28,4 @@ ret :: ReaderState Int Int Int
 ret = cataRec alg (anaRec coAlg [1..5])
 
 main :: IO ()
-main = print (run ret 3 0)
+main = print $ infer empty (In (Lit (I 42)))
