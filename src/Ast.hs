@@ -17,3 +17,6 @@ type Exp = Fix ExpF
 
 lit :: Prim -> Exp
 lit v = In (Lit v)
+
+var :: String -> Exp
+var s = In (Var s)

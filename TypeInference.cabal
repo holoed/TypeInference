@@ -19,6 +19,8 @@ executable TypeInference
   main-is:             Main.hs
   other-modules:       Ast,
                        Fixpoint,
+                       InferMonad,
+                       Unification,
                        Infer,
                        Monads,
                        RecursionSchemes,
@@ -36,6 +38,8 @@ test-suite tests
   main-is: Tests.hs
   other-modules:       Ast,
                        Fixpoint,
+                       InferMonad,
+                       Unification,
                        Infer,
                        Monads,
                        RecursionSchemes,
