@@ -16,4 +16,4 @@ main = hspec $
 
           it "type of a variable in the environment" $
             infer env (var "x") `shouldBe` TyCon "string" []
-            where env = fromList [("x", ForAll (TyCon "string" []) [])]
+            where env = fromList [("x", ForAll (TyCon "string" []))]

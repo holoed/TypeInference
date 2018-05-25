@@ -10,7 +10,7 @@ data Type = TyCon String [Type]
 
 -- Type Schemes
 
-data TypeScheme = ForAll Type [String]
+data TypeScheme = ForAll Type 
                 | Identity Type
 
 getTVarsOfType :: Type -> Set String
