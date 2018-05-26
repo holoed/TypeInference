@@ -6,6 +6,7 @@ import Monads
 import RecursionSchemes
 import Ast
 import Types
+import Environment
 import Substitutions
 import InferMonad
 import Unification
@@ -13,12 +14,6 @@ import Unification
 valueToType :: Prim -> Type
 valueToType (I _) = TyCon "int" []
 valueToType _ = undefined
-
-updateSubs :: (Substitutions -> TypeM Substitutions) -> TypeM ()
-updateSubs f =
-   do (subs, index) <- get
-      subs' <- f subs
-      put (subs', index)
 
 getTypeForName :: String -> TypeM Type
 getTypeForName n =
