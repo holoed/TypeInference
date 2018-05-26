@@ -1,6 +1,5 @@
 module Infer where
 
-import Control.Monad
 import Data.Map (empty)
 import Monads
 import RecursionSchemes
@@ -15,23 +14,25 @@ valueToType :: Prim -> Type
 valueToType (I _) = TyCon "int" []
 valueToType _ = undefined
 
-getTypeForName :: String -> TypeM Type
-getTypeForName n =
-  do (env, _) <- ask
-     unless (containsSc n env) $ error ("Name " ++ n ++ " not found")
-     case findSc n env of
-       ForAll t -> return t -- Make fresh
-       _        -> fail "Not supported yet"
-
-
 alg :: ExpF (TypeM Exp) -> TypeM Exp
-alg (Lit v) = do (_, bt) <- ask
+alg (Lit v) = do bt <- getBaseType
                  updateSubs $ mgu (valueToType v) bt
                  return (lit v)
-alg (Var n) = do (_, bt) <- ask
+alg (Var n) = do bt <- getBaseType
                  t <- getTypeForName n
                  updateSubs $ mgu t bt
                  return (var n)
+alg (App e1 e2) = do t1 <- newTyVar
+                     e1' <- local (\(env, t2) -> (env, TyLam t1 t2)) e1
+                     e2' <- local (\(env, _)  -> (env, t1)) e2
+                     return (app e1' e2')
+alg (Lam n e) = do bt <- getBaseType
+                   t1 <- newTyVar
+                   t2 <- newTyVar
+                   let t = TyLam t1 t2
+                   updateSubs $ mgu t bt
+                   e' <- local (\(env, _) -> (addSc n (Identity t1) env, t2)) e
+                   return (lam n e')
 alg _ = undefined
 
 infer :: Env -> Exp -> Type

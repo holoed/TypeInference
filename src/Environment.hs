@@ -12,3 +12,6 @@ findSc n e = fromJust (lookup n e)
 
 containsSc :: String -> Env -> Bool
 containsSc = member
+
+addSc :: String -> TypeScheme -> Env -> Env
+addSc = insert

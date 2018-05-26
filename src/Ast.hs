@@ -20,3 +20,9 @@ lit v = In (Lit v)
 
 var :: String -> Exp
 var s = In (Var s)
+
+app :: Exp -> Exp -> Exp
+app e1 e2 = In (App e1 e2)
+
+lam :: String -> Exp -> Exp
+lam s e = In (Lam s e)
