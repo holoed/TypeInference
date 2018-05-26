@@ -18,7 +18,7 @@ main = hspec $
             let env = fromList [("x", ForAll (TyCon "string" []))] in
             infer env (var "x") `shouldBe` TyCon "string" []
 
-          it "apply identity to int" $
+          it "type of applying identity to int" $
             let env = fromList [("id", ForAll (TyLam (TyVar "T1") (TyVar "T1")))] in
             infer env (app (var "id") (lit (I 42))) `shouldBe` TyCon "int" []
 
