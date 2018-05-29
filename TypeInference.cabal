@@ -27,13 +27,18 @@ executable TypeInference
                        RecursionSchemes,
                        Substitutions,
                        Types,
-                       PrettyTypes
+                       PrettyTypes,
+                       Lexer,
+                       Parser
   other-extensions:    DeriveFunctor, UndecidableInstances
   build-depends:       base,
+                       array,
                        containers,
                        mtl,
-                       transformers
+                       transformers,
+                       haskeline
   hs-source-dirs:      src
+  build-tools:         happy, alex
   default-language:    Haskell2010
 
 test-suite tests
@@ -50,9 +55,13 @@ test-suite tests
                        RecursionSchemes,
                        Substitutions,
                        Types,
-                       PrettyTypes
+                       PrettyTypes,
+                       Lexer,
+                       Parser
   hs-source-dirs: tests, src
+  build-tools:         happy, alex
   build-depends:       base,
+                       array,
                        containers,
                        mtl,
                        transformers,

@@ -4,7 +4,7 @@ module Ast where
 
 import Fixpoint
 
-data Prim = I Int | B Bool | S String
+data Prim = I Int | B Bool | S String deriving (Eq, Show)
 
 data ExpF a = Lit Prim
             | Var String
@@ -26,3 +26,9 @@ app e1 e2 = In (App e1 e2)
 
 lam :: String -> Exp -> Exp
 lam s e = In (Lam s e)
+
+leT :: String -> Exp -> Exp -> Exp
+leT s v b = In (Let s v b)
+
+ifThenElse :: Exp -> Exp -> Exp -> Exp
+ifThenElse p e1 e2 = In (IfThenElse p e1 e2)
