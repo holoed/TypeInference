@@ -1,31 +1,23 @@
-{-# LANGUAGE DeriveFunctor #-}
-
 module Monads where
 
+import Control.Monad.Trans
+import qualified Control.Monad.Trans.Reader as R
+import qualified Control.Monad.Trans.State.Lazy as S
+
 -- ReaderState Monad
-
-data ReaderState r s a = ReaderState (r -> s -> (s, a)) deriving Functor
-
-run (ReaderState f) = f
+type ReaderState r s = R.ReaderT r (S.State s)
 
 ask :: ReaderState r s r
-ask = ReaderState (\r s -> (s, r))
+ask = R.ask
 
 local :: (r -> r) -> ReaderState r s a -> ReaderState r s a
-local f m = ReaderState (\r s -> run m (f r) s)
+local = R.local
 
 get :: ReaderState r s s
-get = ReaderState (\r s -> (s, s))
+get = lift S.get
 
 put :: s -> ReaderState r s ()
-put s = ReaderState (\r _ -> (s, ()))
+put s = lift (S.put s)
 
-instance Applicative (ReaderState r s) where
-  pure = return
-  fm <*> xm = do f <- fm
-                 x <- xm
-                 return (f x)
-
-instance Monad (ReaderState r s) where
-  return x = ReaderState (\r s -> (s, x))
-  m >>= f = ReaderState (\r s -> let (s', x) = run m r s in run (f x) r s')
+run :: ReaderState r s a -> r -> s -> s
+run m r = S.execState (R.runReaderT m r)
