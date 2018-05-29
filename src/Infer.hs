@@ -10,6 +10,7 @@ import Environment
 import Substitutions
 import InferMonad
 import Unification
+import PrettyTypes
 
 valueToType :: Prim -> Type
 valueToType (I _) = TyCon "int" []
@@ -41,7 +42,7 @@ alg (Lam n e) = do bt <- getBaseType
 alg _ = undefined
 
 infer :: Env -> Exp -> Type
-infer env e = substitute subs bt
+infer env e = pretty (substitute subs bt)
   where (subs, _) = run m ctx state
         m = cataRec alg e
         bt =  TyVar "TBase"

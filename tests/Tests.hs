@@ -19,11 +19,11 @@ main = hspec $
             infer env (var "x") `shouldBe` TyCon "string" []
 
           it "type of applying identity to int" $
-            let env = fromList [("id", ForAll (TyLam (TyVar "T1") (TyVar "T1")))] in
+            let env = fromList [("id", ForAll (TyLam (TyVar "a") (TyVar "a")))] in
             infer env (app (var "id") (lit (I 42))) `shouldBe` TyCon "int" []
 
           it "type of identity" $
-            infer empty (lam "x" (var "x")) `shouldBe` TyLam (TyVar "T1") (TyVar "T1")
+            infer empty (lam "x" (var "x")) `shouldBe` TyLam (TyVar "a") (TyVar "a")
 
           it "type of nested lam that take 2 arg and return first" $
-            infer empty (lam "x" (lam "y" (var "x"))) `shouldBe` TyLam (TyVar "T3") (TyLam (TyVar "T2") (TyVar "T3"))
+            infer empty (lam "x" (lam "y" (var "x"))) `shouldBe` TyLam (TyVar "a") (TyLam (TyVar "b") (TyVar "a"))

@@ -26,7 +26,8 @@ executable TypeInference
                        Monads,
                        RecursionSchemes,
                        Substitutions,
-                       Types
+                       Types,
+                       PrettyTypes
   other-extensions:    DeriveFunctor, UndecidableInstances
   build-depends:       base,
                        containers,
@@ -48,7 +49,8 @@ test-suite tests
                        Monads,
                        RecursionSchemes,
                        Substitutions,
-                       Types
+                       Types,
+                       PrettyTypes
   hs-source-dirs: tests, src
   build-depends:       base,
                        containers,
