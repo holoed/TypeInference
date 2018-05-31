@@ -11,7 +11,7 @@ data ExpF a = Lit Prim
             | App a a
             | Lam String a
             | Let String a a
-            | IfThenElse a a a deriving Functor
+            | IfThenElse a a a deriving (Show, Eq, Functor)
 
 type Exp = Fix ExpF
 

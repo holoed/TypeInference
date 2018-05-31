@@ -1,29 +1,39 @@
 module Main where
 
 import Test.Hspec
-import Data.Map (empty, fromList)
-
-import Ast
 import Types
-import Infer
+import Environment
+import Data.Map (empty, fromList)
+import Ast
+import Infer (infer)
+import Parser (parseExpr)
+
+parse :: String -> Exp
+parse = either (\s -> error ("Unable to type " ++ s)) id . parseExpr
+
+typeOf' :: Env -> String -> Type
+typeOf' env = infer env . parse
+
+typeOf :: String -> Type
+typeOf = typeOf' empty
 
 main :: IO ()
 main = hspec $
   describe "Type Inference Tests" $ do
 
     it "type of a literal" $
-      infer empty (lit (I 42)) `shouldBe` TyCon "int" []
+      typeOf "42" `shouldBe` TyCon "int" []
 
     it "type of a variable in the environment" $
       let env = fromList [("x", ForAll (TyCon "string" []))] in
-      infer env (var "x") `shouldBe` TyCon "string" []
+      typeOf' env "x" `shouldBe` TyCon "string" []
 
     it "type of applying identity to int" $
       let env = fromList [("id", ForAll (TyLam (TyVar "a") (TyVar "a")))] in
-      infer env (app (var "id") (lit (I 42))) `shouldBe` TyCon "int" []
+      typeOf' env "id 42" `shouldBe` TyCon "int" []
 
     it "type of identity" $
-      infer empty (lam "x" (var "x")) `shouldBe` TyLam (TyVar "a") (TyVar "a")
+      typeOf "\\x -> x" `shouldBe` TyLam (TyVar "a") (TyVar "a")
 
     it "type of nested lam that take 2 arg and return first" $
-      infer empty (lam "x" (lam "y" (var "x"))) `shouldBe` TyLam (TyVar "a") (TyLam (TyVar "b") (TyVar "a"))
+      typeOf "\\x -> \\y -> x" `shouldBe` TyLam (TyVar "a") (TyLam (TyVar "b") (TyVar "a"))
