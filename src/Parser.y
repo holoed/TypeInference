@@ -29,6 +29,8 @@ import Control.Monad.Except
 -- Token Names
 %token
     let   { TokenLet }
+    true  { TokenTrue }
+    false { TokenFalse }
     if    { TokenIf }
     then  { TokenThen }
     else  { TokenElse }
@@ -68,6 +70,8 @@ Fact : Fact Atom                   { app $1 $2 }
 Atom : '(' Expr ')'                { $2 }
      | NUM                         { lit $1 }
      | VAR                         { var $1 }
+     | true                        { lit (B True) }
+     | false                       { lit (B False) }
 
 {
 

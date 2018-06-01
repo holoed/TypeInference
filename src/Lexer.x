@@ -28,6 +28,8 @@ tokens :-
 
   -- Syntax
   let                           { \s -> TokenLet }
+  True                          { \s -> TokenTrue }
+  False                         { \s -> TokenFalse }
   if                            { \s -> TokenIf }
   then                          { \s -> TokenThen }
   else                          { \s -> TokenElse }
@@ -53,6 +55,8 @@ data Token
   | TokenElse
   | TokenIn
   | TokenLambda
+  | TokenTrue
+  | TokenFalse
   | TokenNum Prim
   | TokenSym String
   | TokenArrow
