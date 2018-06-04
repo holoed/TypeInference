@@ -43,8 +43,8 @@ main = hspec $
 
     it "type of conditionals" $ do
       "if True then 5 else 6" --> "Int"
-    --  "if True then 5 else False" --> "Unable to unify Bool Int "
-    --  "if 5 then True else False" --> "Unable to unify Bool Int"
+      "if True then 5 else False" --> "Unable to unify Bool Int"
+      "if 5 then True else False" --> "Unable to unify Int Bool"
 
     it "type of let" $ do
       "let x = 42 in x" --> "Int"

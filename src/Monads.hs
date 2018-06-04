@@ -21,5 +21,8 @@ get = lift S.get
 put :: s -> ReaderState r s ()
 put s = lift (S.put s)
 
+throwError :: String -> ReaderState r s a
+throwError s = lift (lift (E.throwE s))
+
 run :: ReaderState r s a -> r -> s -> Either String s
 run m r s = runIdentity (E.runExceptT (S.execStateT (R.runReaderT m r) s))
