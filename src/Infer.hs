@@ -2,6 +2,7 @@ module Infer where
 
 import Control.Arrow (first, second)
 import Data.Map (empty)
+import Data.Either (fromRight)
 import Monads
 import RecursionSchemes
 import Ast
@@ -60,7 +61,7 @@ alg (Let n e1 e2) =
 
 infer :: Env -> Exp -> Type
 infer env e = pretty (substitute subs bt)
-  where (subs, _) = run m ctx state
+  where (subs, _) = fromRight (empty, 0) (run m ctx state)
         m = cataRec alg e
         bt =  TyVar "TBase"
         ctx = (env, bt)
