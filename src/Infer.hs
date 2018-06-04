@@ -2,7 +2,6 @@ module Infer where
 
 import Control.Arrow (first, second)
 import Data.Map (empty)
-import Data.Either (fromRight)
 import Monads
 import RecursionSchemes
 import Ast
@@ -59,9 +58,10 @@ alg (Let n e1 e2) =
      e2' <- local (first (addSc n (generalise (substitute subs t)))) e2
      return (leT n e1' e2')
 
-infer :: Env -> Exp -> Type
-infer env e = pretty (substitute subs bt)
-  where (subs, _) = fromRight (empty, 0) (run m ctx state)
+infer :: Env -> Exp -> Either String Type
+infer env e = fmap f (run m ctx state)
+  where
+        f (subs, _) = pretty (substitute subs bt)
         m = cataRec alg e
         bt =  TyVar "TBase"
         ctx = (env, bt)

@@ -1,6 +1,5 @@
 module Main where
 
-import Data.Bifunctor
 import Test.Hspec
 import Types
 import Environment
@@ -15,7 +14,7 @@ env = fromList [("id", ForAll (TyLam (TyVar "a") (TyVar "a"))),
                 ("*", ForAll (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))))]
 
 typeOf :: String -> Either String Type
-typeOf s = second (infer env) (parseExpr s)
+typeOf s = parseExpr s >>= infer env
 
 (-->) :: String -> String -> Expectation
 (-->) x y = either id show (typeOf x) `shouldBe` y
