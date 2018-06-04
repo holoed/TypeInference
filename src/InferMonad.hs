@@ -38,3 +38,7 @@ getTypeForName n =
      case findSc n env of
        ForAll t -> mkForAll t
        Identity t -> return t
+
+generalise :: Type -> TypeScheme
+generalise t@(TyLam _ _) = ForAll t
+generalise t = Identity t

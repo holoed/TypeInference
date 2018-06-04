@@ -1,6 +1,6 @@
 module Infer where
 
-import Control.Arrow (second)
+import Control.Arrow (first, second)
 import Data.Map (empty)
 import Monads
 import RecursionSchemes
@@ -51,7 +51,12 @@ alg (IfThenElse p e1 e2) =
      e2' <- local (second (substitute subs)) e2
      return (ifThenElse p' e1' e2')
 
-alg _ = undefined
+alg (Let n e1 e2) =
+  do t <- newTyVar
+     e1' <- local (\(env, _) -> (addSc n (Identity t) env, t)) e1
+     (subs, _) <- get
+     e2' <- local (first (addSc n (generalise (substitute subs t)))) e2
+     return (leT n e1' e2')
 
 infer :: Env -> Exp -> Type
 infer env e = pretty (substitute subs bt)

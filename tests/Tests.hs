@@ -9,7 +9,10 @@ import Infer (infer)
 import Parser (parseExpr)
 
 env :: Env
-env = fromList [("id", ForAll (TyLam (TyVar "a") (TyVar "a")))]
+env = fromList [("id", ForAll (TyLam (TyVar "a") (TyVar "a"))),
+                ("==", ForAll (TyLam (TyVar "a") (TyLam (TyVar "a") (TyCon "Bool" [])))),
+                ("-", ForAll (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
+                ("*", ForAll (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))))]
 
 typeOf :: String -> Either String Type
 typeOf s = second (infer env) (parseExpr s)
@@ -43,3 +46,9 @@ main = hspec $
       "if True then 5 else 6" --> "Int"
     --  "if True then 5 else False" --> "Unable to unify Bool Int "
     --  "if 5 then True else False" --> "Unable to unify Bool Int"
+
+    it "type of let" $ do
+      "let x = 42 in x" --> "Int"
+      "let f = \\x -> x in f" --> "(a -> a)"
+      "let fix = \\f -> f (fix f) in fix" --> "((a -> a) -> a)"
+      "let fac = \\n -> if (n == 0) then 1 else n * (fac (n - 1)) in fac" --> "(Int -> Int)"
