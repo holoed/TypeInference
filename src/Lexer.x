@@ -44,6 +44,7 @@ tokens :-
   [\*]                          { \s -> TokenMul }
   \(                            { \s -> TokenLParen }
   \)                            { \s -> TokenRParen }
+  ","                           { \s -> TokenComma }
   $alpha [$alpha $digit \_ \']* { \s -> TokenSym s }
 
 {
@@ -67,6 +68,7 @@ data Token
   | TokenMul
   | TokenLParen
   | TokenRParen
+  | TokenComma
   | TokenEOF
   deriving (Eq,Show)
 

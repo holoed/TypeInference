@@ -8,6 +8,7 @@ data Prim = I Int | B Bool | S String deriving (Eq, Show)
 
 data ExpF a = Lit Prim
             | Var String
+            | MkTuple [a]
             | App a a
             | Lam String a
             | Let String a a
@@ -32,3 +33,6 @@ leT s v b = In (Let s v b)
 
 ifThenElse :: Exp -> Exp -> Exp -> Exp
 ifThenElse p e1 e2 = In (IfThenElse p e1 e2)
+
+mkTuple :: [Exp] -> Exp
+mkTuple xs = In (MkTuple xs)

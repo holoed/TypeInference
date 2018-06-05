@@ -44,6 +44,7 @@ import Control.Monad.Except
     '+'   { TokenAdd }
     '-'   { TokenSub }
     '*'   { TokenMul }
+    ','   { TokenComma }
     '('   { TokenLParen }
     ')'   { TokenRParen }
 
@@ -68,10 +69,14 @@ Fact : Fact Atom                   { app $1 $2 }
      | Atom                        { $1 }
 
 Atom : '(' Expr ')'                { $2 }
+     | '(' Exprs ')'               { mkTuple $2 }
      | NUM                         { lit $1 }
      | VAR                         { var $1 }
      | true                        { lit (B True) }
      | false                       { lit (B False) }
+
+Exprs : Expr                       { [$1] }
+      | Exprs ',' Expr             { $3 : $1 }
 
 {
 
