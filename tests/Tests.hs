@@ -26,6 +26,10 @@ main = hspec $
     it "type of a literal" $
       "42" --> "Int"
 
+    it "type of a name" $ do
+      "id" --> "(a -> a)"
+      "foo" --> "Name foo not found."
+
     it "type of identity" $
       "\\x -> x" --> "(a -> a)"
 

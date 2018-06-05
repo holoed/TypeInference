@@ -34,7 +34,7 @@ mkForAll t = fmap (`substitute` t) (refreshNames (getTVarsOfType t))
 getTypeForName :: String -> TypeM Type
 getTypeForName n =
   do (env, _) <- ask
-     unless (containsSc n env) $ error ("Name " ++ n ++ " not found")
+     unless (containsSc n env) $ throwError ("Name " ++ n ++ " not found.")
      case findSc n env of
        ForAll t -> mkForAll t
        Identity t -> return t
