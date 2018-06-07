@@ -76,7 +76,7 @@ Atom : '(' Expr ')'                { $2 }
      | false                       { lit (B False) }
 
 Exprs : Expr                       { [$1] }
-      | Exprs ',' Expr             { $3 : $1 }
+      | Expr ',' Exprs             { $1 : $3 }
 
 {
 
