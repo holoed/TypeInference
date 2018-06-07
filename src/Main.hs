@@ -1,6 +1,7 @@
 module Main where
 
 import Control.Monad.Trans
+import qualified Data.Set as Set
 import Data.Map (Map, empty, fromList)
 import Fixpoint
 import RecursionSchemes
@@ -13,9 +14,9 @@ import System.Console.Haskeline
 import Parser (parseExpr)
 
 env :: Env
-env = fromList [("==", ForAll (TyLam (TyVar "a") (TyLam (TyVar "a") (TyCon "Bool" [])))),
-                ("-", ForAll (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
-                ("*", ForAll (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))))]
+env = fromList [("==", ForAll Set.empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyCon "Bool" [])))),
+                ("-", ForAll Set.empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
+                ("*", ForAll Set.empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))))]
 
 process :: String -> IO ()
 process input = do

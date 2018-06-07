@@ -6,9 +6,10 @@ import Types
 import Substitutions
 import Environment
 import Data.Map (fromList)
-import Data.Set (Set, toList)
+import Data.Set (Set, toList, (\\), map, unions)
+import Prelude hiding (map)
 
-type TypeM = ReaderState (Env, Type) (Substitutions, Int)
+type TypeM = ReaderState (Env, Type, Set String) (Substitutions, Int)
 
 newTyVar :: TypeM Type
 newTyVar = do (subs, i) <- get
@@ -20,7 +21,10 @@ refreshNames ns = do (TyVar n') <- newTyVar
                      return $ fromList (fmap (\n -> (n, TyVar (n ++ n'))) (toList ns))
 
 getBaseType :: TypeM Type
-getBaseType = fmap snd ask
+getBaseType = fmap (\(_,b,_) -> b) ask
+
+getEnv :: TypeM Env
+getEnv = fmap (\(env,_,_) -> env) ask
 
 updateSubs :: (Substitutions -> TypeM Substitutions) -> TypeM ()
 updateSubs f =
@@ -28,17 +32,22 @@ updateSubs f =
       subs' <- f subs
       put (subs', index)
 
-mkForAll :: Type -> TypeM Type
-mkForAll t = fmap (`substitute` t) (refreshNames (getTVarsOfType t))
+-- https://ghc.haskell.org/trac/ghc/blog/LetGeneralisationInGhc7
+mkForAll :: Set String -> Type -> TypeM Type
+mkForAll sv t = do
+  (subs, _) <- get
+  let subSv = map (substitute subs . TyVar) sv
+  let tyToRefresh = getTVarsOfType t \\ unions (toList (map getTVarsOfType subSv))
+  fmap (`substitute` t) (refreshNames tyToRefresh)
 
 getTypeForName :: String -> TypeM Type
 getTypeForName n =
-  do (env, _) <- ask
+  do env <- getEnv
      unless (containsSc n env) $ throwError ("Name " ++ n ++ " not found.")
      case findSc n env of
-       ForAll t -> mkForAll t
+       ForAll sv t -> mkForAll sv t
        Identity t -> return t
 
-generalise :: Type -> TypeScheme
-generalise t@(TyLam _ _) = ForAll t
-generalise t = Identity t
+generalise :: Set String -> Type -> TypeScheme
+generalise sv t@(TyLam _ _) = ForAll sv t
+generalise _ t = Identity t

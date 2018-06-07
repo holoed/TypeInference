@@ -7,7 +7,7 @@ import Data.Set (Set, empty, union, singleton)
 
 data Type = TyCon String [Type]
           | TyVar String
-          | TyLam Type Type deriving Eq
+          | TyLam Type Type deriving (Eq, Ord)
 
 instance Show Type where
   show (TyCon name []) = name
@@ -18,7 +18,7 @@ instance Show Type where
 
 -- Type Schemes
 
-data TypeScheme = ForAll Type
+data TypeScheme = ForAll (Set String) Type
                 | Identity Type
 
 getTVarsOfType :: Type -> Set String

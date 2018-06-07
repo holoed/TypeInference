@@ -1,7 +1,7 @@
 module Infer where
 
-import Control.Arrow (first, second)
 import Data.Map (empty)
+import Data.Set (fromList, insert)
 import Monads
 import RecursionSchemes
 import Ast
@@ -31,31 +31,31 @@ alg (Var n) =
 
 alg (App e1 e2) =
   do t1 <- newTyVar
-     e1' <- local (second (TyLam t1)) e1
-     e2' <- local (\(env, _)  -> (env, t1)) e2
+     e1' <- local (\(env, t, sv) -> (env, TyLam t1 t, sv)) e1
+     e2' <- local (\(env, _, sv)  -> (env, t1, sv)) e2
      return (app e1' e2')
 
 alg (Lam n e) =
   do bt <- getBaseType
-     t1 <- newTyVar
+     t1@(TyVar t1n) <- newTyVar
      t2 <- newTyVar
      let t = TyLam t1 t2
      updateSubs $ mgu t bt
-     e' <- local (\(env, _) -> (addSc n (Identity t1) env, t2)) e
+     e' <- local (\(env, _, sv) -> (addSc n (Identity t1) env, t2, insert t1n sv)) e
      return (lam n e')
 
 alg (IfThenElse p e1 e2) =
-  do p' <- local (\(env, _) -> (env, TyCon "Bool" [])) p
+  do p' <- local (\(env, _, sv) -> (env, TyCon "Bool" [], sv)) p
      e1' <- e1
      (subs, _) <- get
-     e2' <- local (second (substitute subs)) e2
+     e2' <- local (\(env, t, sv) -> (env, substitute subs t, sv)) e2
      return (ifThenElse p' e1' e2')
 
 alg (Let n e1 e2) =
-  do t <- newTyVar
-     e1' <- local (\(env, _) -> (addSc n (Identity t) env, t)) e1
+  do t@(TyVar tn) <- newTyVar
+     e1' <- local (\(env, _, sv) -> (addSc n (Identity t) env, t, insert tn sv)) e1
      (subs, _) <- get
-     e2' <- local (first (addSc n (generalise (substitute subs t)))) e2
+     e2' <- local (\(env, bt, sv) -> (addSc n (generalise sv (substitute subs t)) env, bt, sv)) e2
      return (leT n e1' e2')
 
 alg (MkTuple es) =
@@ -63,7 +63,7 @@ alg (MkTuple es) =
      ts <- mapM (const newTyVar) es
      let t = TyCon "Tuple" ts
      updateSubs $ mgu t bt
-     es' <- sequence (fmap (\(e, t') -> local (\(env, _) -> (env, t')) e) (zip es ts))
+     es' <- sequence (fmap (\(e, t') -> local (\(env, _, sv) -> (env, t', sv)) e) (zip es ts))
      return (mkTuple es')
 
 infer :: Env -> Exp -> Either String Type
@@ -72,5 +72,5 @@ infer env e = fmap f (run m ctx state)
         f (subs, _) = pretty (substitute subs bt)
         m = cataRec alg e
         bt =  TyVar "TBase"
-        ctx = (env, bt)
+        ctx = (env, bt, fromList [])
         state = (empty, 0)

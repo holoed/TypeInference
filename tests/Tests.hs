@@ -4,14 +4,15 @@ import Test.Hspec
 import Types
 import Environment
 import Data.Map (fromList)
+import Data.Set (empty)
 import Infer (infer)
 import Parser (parseExpr)
 
 env :: Env
-env = fromList [("id", ForAll (TyLam (TyVar "a") (TyVar "a"))),
-                ("==", ForAll (TyLam (TyVar "a") (TyLam (TyVar "a") (TyCon "Bool" [])))),
-                ("-", ForAll (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
-                ("*", ForAll (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))))]
+env = fromList [("id", ForAll empty (TyLam (TyVar "a") (TyVar "a"))),
+                ("==", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyCon "Bool" [])))),
+                ("-", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
+                ("*", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))))]
 
 typeOf :: String -> Either String Type
 typeOf s = parseExpr s >>= infer env
@@ -62,4 +63,5 @@ main = hspec $
       "let fix = \\f -> f (fix f) in fix" --> "((a -> a) -> a)"
       "let fac = \\n -> if (n == 0) then 1 else n * (fac (n - 1)) in fac" --> "(Int -> Int)"
       "let f = \\x -> x in (f 5, f True)" --> "(Int, Bool)"
-      "let f = \\x -> let g = \\y -> (x, y) in (g 3, g True) in f" --> "(a -> ((b, Int), (c, Bool)))"
+      -- https://ghc.haskell.org/trac/ghc/blog/LetGeneralisationInGhc7
+      "let f = \\x -> let g = \\y -> (x, y) in (g 3, g True) in f" --> "(a -> ((a, Int), (a, Bool)))"
