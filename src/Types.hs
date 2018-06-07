@@ -1,6 +1,7 @@
 module Types where
 
-import Data.Set (Set, empty, union, singleton, member)
+import Data.List (intercalate)
+import Data.Set (Set, empty, union, singleton)
 
 -- Type
 
@@ -10,6 +11,7 @@ data Type = TyCon String [Type]
 
 instance Show Type where
   show (TyCon name []) = name
+  show (TyCon "Tuple" xs) = "(" ++ intercalate ", " (fmap show xs) ++ ")"
   show (TyVar name) = name
   show (TyLam t1 t2) = "(" ++ show t1 ++ " -> " ++ show t2 ++ ")"
   show _ = error "Not yet supported"

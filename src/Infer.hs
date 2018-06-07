@@ -58,6 +58,14 @@ alg (Let n e1 e2) =
      e2' <- local (first (addSc n (generalise (substitute subs t)))) e2
      return (leT n e1' e2')
 
+alg (MkTuple es) =
+  do bt <- getBaseType
+     ts <- mapM (const newTyVar) es
+     let t = TyCon "Tuple" ts
+     updateSubs $ mgu t bt
+     es' <- sequence (fmap (\(e, t') -> local (\(env, _) -> (env, t')) e) (zip es ts))
+     return (mkTuple es')
+
 infer :: Env -> Exp -> Either String Type
 infer env e = fmap f (run m ctx state)
   where

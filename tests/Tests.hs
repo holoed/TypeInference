@@ -50,8 +50,15 @@ main = hspec $
       "if True then 5 else False" --> "Unable to unify Bool Int"
       "if 5 then True else False" --> "Unable to unify Int Bool"
 
+    it "type of tuple" $ do
+      "(2, True)" --> "(Int, Bool)"
+      "(False, 4)" --> "(Bool, Int)"
+      "\\x -> (x, x)" --> "(a -> (a, a))"
+      "\\x -> \\y -> (y, x)" --> "(a -> (b -> (b, a)))"
+
     it "type of let" $ do
       "let x = 42 in x" --> "Int"
       "let f = \\x -> x in f" --> "(a -> a)"
       "let fix = \\f -> f (fix f) in fix" --> "((a -> a) -> a)"
       "let fac = \\n -> if (n == 0) then 1 else n * (fac (n - 1)) in fac" --> "(Int -> Int)"
+      "let f = \\x -> x in (f 5, f True)" --> "(Int, Bool)"
