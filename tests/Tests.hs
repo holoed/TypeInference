@@ -62,3 +62,4 @@ main = hspec $
       "let fix = \\f -> f (fix f) in fix" --> "((a -> a) -> a)"
       "let fac = \\n -> if (n == 0) then 1 else n * (fac (n - 1)) in fac" --> "(Int -> Int)"
       "let f = \\x -> x in (f 5, f True)" --> "(Int, Bool)"
+      "let f = \\x -> let g = \\y -> (x, y) in (g 3, g True) in f" --> "(a -> ((b, Int), (c, Bool)))"
