@@ -41,7 +41,7 @@ alg (Lam n e) =
      t2 <- newTyVar
      let t = TyLam t1 t2
      updateSubs $ mgu t bt
-     e' <- local (\(env, _, sv) -> (addSc n (Identity t1) env, t2, insert t1n sv)) e
+     e' <- local (\(env, _, sv) -> (addScheme n (Identity t1) env, t2, insert t1n sv)) e
      return (lam n e')
 
 alg (IfThenElse p e1 e2) =
@@ -53,9 +53,9 @@ alg (IfThenElse p e1 e2) =
 
 alg (Let n e1 e2) =
   do t@(TyVar tn) <- newTyVar
-     e1' <- local (\(env, _, sv) -> (addSc n (Identity t) env, t, insert tn sv)) e1
+     e1' <- local (\(env, _, sv) -> (addScheme n (Identity t) env, t, insert tn sv)) e1
      (subs, _) <- get
-     e2' <- local (\(env, bt, sv) -> (addSc n (generalise sv (substitute subs t)) env, bt, sv)) e2
+     e2' <- local (\(env, bt, sv) -> (addScheme n (generalise sv (substitute subs t)) env, bt, sv)) e2
      return (leT n e1' e2')
 
 alg (MkTuple es) =

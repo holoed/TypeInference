@@ -3,19 +3,17 @@ module Main where
 import Test.Hspec
 import Types
 import Environment
-import Data.Map (fromList)
-import Data.Set (empty)
 import Infer (infer)
 import Parser (parseExpr)
 
 env :: Env
-env = fromList [("id", ForAll empty (TyLam (TyVar "a") (TyVar "a"))),
-                ("==", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyCon "Bool" [])))),
-                ("-", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
-                ("+", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
-                ("*", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
-                ("fst", ForAll empty (TyLam (TyCon "Tuple" [TyVar "a", TyVar "b"]) (TyVar "a"))),
-                ("snd", ForAll empty (TyLam (TyCon "Tuple" [TyVar "a", TyVar "b"]) (TyVar "b")))]
+env = toEnv [("id", TyLam (TyVar "a") (TyVar "a")),
+            ("==", TyLam (TyVar "a") (TyLam (TyVar "a") (TyCon "Bool" []))),
+            ("-",  TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))),
+            ("+",  TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))),
+            ("*",  TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))),
+            ("fst", TyLam (TyCon "Tuple" [TyVar "a", TyVar "b"]) (TyVar "a")),
+            ("snd", TyLam (TyCon "Tuple" [TyVar "a", TyVar "b"]) (TyVar "b"))]
 
 typeOf :: String -> Either String Type
 typeOf s = parseExpr s >>= infer env

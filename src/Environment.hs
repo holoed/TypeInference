@@ -1,17 +1,24 @@
 module Environment where
 
 import Data.Maybe
-import Data.Map
+import qualified Data.Map as Map
+import qualified Data.Set as Set
 import Types
 import Prelude hiding (lookup)
 
-type Env = Map String TypeScheme
+type Env = Map.Map String TypeScheme
 
-findSc :: String -> Env -> TypeScheme
-findSc n e = fromJust (lookup n e)
+findScheme :: String -> Env -> TypeScheme
+findScheme n e = fromJust (Map.lookup n e)
 
-containsSc :: String -> Env -> Bool
-containsSc = member
+containsScheme :: String -> Env -> Bool
+containsScheme = Map.member
 
-addSc :: String -> TypeScheme -> Env -> Env
-addSc = insert
+addScheme :: String -> TypeScheme -> Env -> Env
+addScheme = Map.insert
+
+toScheme :: Type -> TypeScheme
+toScheme = ForAll Set.empty
+
+toEnv :: [(String, Type)] -> Env
+toEnv xs = Map.map toScheme (Map.fromList xs)

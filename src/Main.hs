@@ -14,9 +14,9 @@ import System.Console.Haskeline
 import Parser (parseExpr)
 
 env :: Env
-env = fromList [("==", ForAll Set.empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyCon "Bool" [])))),
-                ("-", ForAll Set.empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
-                ("*", ForAll Set.empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))))]
+env = toEnv [("==", TyLam (TyVar "a") (TyLam (TyVar "a") (TyCon "Bool" []))),
+             ("-",  TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))),
+             ("*",  TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))]
 
 process :: String -> IO ()
 process input = do
