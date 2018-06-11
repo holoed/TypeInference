@@ -12,7 +12,10 @@ env :: Env
 env = fromList [("id", ForAll empty (TyLam (TyVar "a") (TyVar "a"))),
                 ("==", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyCon "Bool" [])))),
                 ("-", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
-                ("*", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))))]
+                ("+", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
+                ("*", ForAll empty (TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a")))),
+                ("fst", ForAll empty (TyLam (TyCon "Tuple" [TyVar "a", TyVar "b"]) (TyVar "a"))),
+                ("snd", ForAll empty (TyLam (TyCon "Tuple" [TyVar "a", TyVar "b"]) (TyVar "b")))]
 
 typeOf :: String -> Either String Type
 typeOf s = parseExpr s >>= infer env
@@ -59,7 +62,12 @@ main = hspec $
 
     it "type of let" $ do
       "let x = 42 in x" --> "Int"
+      "let pair = (True, 12) in pair" --> "(Bool, Int)"
+      "let x = if (True) then 2 else 3 in x + 1" --> "Int"
+
+    it "type of functions" $ do
       "let f = \\x -> x in f" --> "(a -> a)"
+      "let swap = \\p -> (snd p, fst p) in swap" --> "((a, b) -> (b, a))"
       "let fix = \\f -> f (fix f) in fix" --> "((a -> a) -> a)"
       "let fac = \\n -> if (n == 0) then 1 else n * (fac (n - 1)) in fac" --> "(Int -> Int)"
       "let f = \\x -> x in (f 5, f True)" --> "(Int, Bool)"
