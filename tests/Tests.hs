@@ -12,6 +12,7 @@ env = toEnv [("id", TyLam (TyVar "a") (TyVar "a")),
             ("-",  TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))),
             ("+",  TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))),
             ("*",  TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))),
+            ("/",  TyLam (TyVar "a") (TyLam (TyVar "a") (TyVar "a"))),
             ("fst", TyLam (TyCon "Tuple" [TyVar "a", TyVar "b"]) (TyVar "a")),
             ("snd", TyLam (TyCon "Tuple" [TyVar "a", TyVar "b"]) (TyVar "b"))]
 
@@ -27,6 +28,11 @@ main = hspec $
 
     it "type of a literal" $
       "42" --> "Int"
+
+    it "type of simple math" $ do
+      "12 + 24" --> "Int"
+      "2 * (3 + 2)" --> "Int"
+      "3 - (2 / 3)" --> "Int"
 
     it "type of a name" $ do
       "id" --> "(a -> a)"
@@ -49,8 +55,8 @@ main = hspec $
 
     it "type of conditionals" $ do
       "if True then 5 else 6" --> "Int"
-      "if True then 5 else False" --> "Unable to unify Bool Int"
-      "if 5 then True else False" --> "Unable to unify Int Bool"
+      "if True then 5 else False" --> "Unable to unify Bool with Int"
+      "if 5 then True else False" --> "Unable to unify Int with Bool"
 
     it "type of tuple" $ do
       "(2, True)" --> "(Int, Bool)"

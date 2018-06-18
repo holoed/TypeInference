@@ -44,6 +44,7 @@ import Control.Monad.Except
     '+'   { TokenAdd }
     '-'   { TokenSub }
     '*'   { TokenMul }
+    '/'   { TokenDiv }
     ','   { TokenComma }
     '('   { TokenLParen }
     ')'   { TokenRParen }
@@ -51,7 +52,7 @@ import Control.Monad.Except
 -- Operators
 %left '=='
 %left '+' '-'
-%left '*'
+%left '*' '/'
 %%
 
 Expr : let VAR '=' Expr in Expr    { leT $2 $4 $6 }
@@ -62,6 +63,7 @@ Expr : let VAR '=' Expr in Expr    { leT $2 $4 $6 }
 Form : Form '+' Form               { app (app (var "+") $1) $3 }
      | Form '-' Form               { app (app (var "-") $1) $3 }
      | Form '*' Form               { app (app (var "*") $1) $3 }
+     | Form '/' Form               { app (app (var "/") $1) $3 }
      | Form '==' Form              { app (app (var "==") $1) $3 }
      | Fact                        { $1 }
 

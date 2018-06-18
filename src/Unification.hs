@@ -17,4 +17,4 @@ mgu a b subs =
                                      mgu a1 a2 subs2
     (TyCon name1 args1, TyCon name2 args2) | name1 == name2 ->
                          foldM (\s (a', b') -> mgu a' b' s) subs (zip args1 args2)
-    (x, y) -> throwError ("Unable to unify " ++ show x ++ " " ++ show y)
+    (x, y) -> throwError ("Unable to unify " ++ show x ++ " with " ++ show y)
