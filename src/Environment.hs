@@ -9,7 +9,7 @@ import Prelude hiding (lookup)
 type Env = Map.Map String TypeScheme
 
 findScheme :: String -> Env -> TypeScheme
-findScheme n e = fromJust (Map.lookup n e)
+findScheme n = fromJust . (Map.lookup n)
 
 containsScheme :: String -> Env -> Bool
 containsScheme = Map.member
@@ -21,4 +21,4 @@ toScheme :: Type -> TypeScheme
 toScheme = ForAll Set.empty
 
 toEnv :: [(String, Type)] -> Env
-toEnv xs = Map.map toScheme (Map.fromList xs)
+toEnv = (Map.map toScheme) . Map.fromList

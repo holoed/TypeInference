@@ -6,6 +6,7 @@ import Monads
 import RecursionSchemes
 import Ast
 import Types
+import BuiltIns
 import Environment
 import Substitutions
 import InferMonad
@@ -13,8 +14,8 @@ import Unification
 import PrettyTypes
 
 valueToType :: Prim -> Type
-valueToType (I _) = TyCon "Int" []
-valueToType (B _) = TyCon "Bool" []
+valueToType (I _) = intCon
+valueToType (B _) = boolCon
 valueToType _ = undefined
 
 alg :: ExpF (TypeM Exp) -> TypeM Exp
@@ -45,7 +46,7 @@ alg (Lam n e) =
      return (lam n e')
 
 alg (IfThenElse p e1 e2) =
-  do p' <- local (\(env, _, sv) -> (env, TyCon "Bool" [], sv)) p
+  do p' <- local (\(env, _, sv) -> (env, boolCon, sv)) p
      e1' <- e1
      (subs, _) <- get
      e2' <- local (\(env, t, sv) -> (env, substitute subs t, sv)) e2
@@ -61,7 +62,7 @@ alg (Let n e1 e2) =
 alg (MkTuple es) =
   do bt <- getBaseType
      ts <- mapM (const newTyVar) es
-     let t = TyCon "Tuple" ts
+     let t = tupleCon ts
      updateSubs $ mgu t bt
      es' <- sequence (fmap (\(e, t') -> local (\(env, _, sv) -> (env, t', sv)) e) (zip es ts))
      return (mkTuple es')
